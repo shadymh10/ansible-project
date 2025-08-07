@@ -1,0 +1,63 @@
+- name: install to remote server
+  hosts: all
+  become: true
+  tasks:
+    - name: Create app directory
+      file:
+        path: /var/www/myapp
+        state: directory
+
+    - name: Create static directory
+      file:
+        path: /var/www/myapp/static
+        state: directory
+
+    - name: Create templates directory
+      file:
+        path: /var/www/myapp/templates
+        state: directory
+
+    - name: Copy app.py
+      copy:
+        src: ../files/app.py
+        dest: /var/www/myapp/app.py
+
+    - name: Copy database
+      copy:
+        src: ../files/notes.db
+        dest: /var/www/myapp/notes.db
+
+    - name: Copy CSS file
+      copy:
+        src: ../static/index.css
+        dest: /var/www/myapp/static/index.css
+
+    - name: Copy HTML file
+      copy:
+        src: ../templates/index.html
+        dest: /var/www/myapp/templates/index.html
+
+    - name: Copy files/static directory if exists
+      copy:
+        src: ../files/static/
+        dest: /var/www/myapp/static/
+      ignore_errors: yes
+
+    - name: Copy files/templates directory if exists
+      copy:
+        src: ../files/templates/
+        dest: /var/www/myapp/templates/
+      ignore_errors: yes
+
+    - name: Stop any existing app
+      shell: pkill -f "python3.*app.py" || true
+      ignore_errors: yes
+
+    - name: Run Flask app
+      shell: |
+        cd /var/www/myapp
+        nohup python3 app.py &
+
+    - name: Show result
+      debug:
+        msg: "App running at http://{{ ansible_default_ipv4.address }}:5000"

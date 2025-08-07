@@ -1,0 +1,7 @@
+- name: restart httpd
+  systemd:
+    name: httpd
+    state: restarted
+
+- name: reload systemd
+  command: systemctl daemon-reexec

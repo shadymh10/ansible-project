@@ -1,0 +1,17 @@
+- name: Install httpd, sqlite, python3 and pip3 packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - httpd
+    - sqlite
+    - python3
+    - python3-pip
+  notify:
+    - Restart httpd service
+    - Reload systemd
+- name: Install Flask using pip3
+  pip:
+    name: flask
+    executable: pip3
+
